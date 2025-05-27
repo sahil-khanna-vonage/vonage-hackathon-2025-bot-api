@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: bot-api
+  mvc:
+    servlet:
+      path: /api
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+server:
+  port: 9090
+
+sqlcoder:
+    url: ${SQLCODER_URL:http://localhost:1235}
+
+logging:
+  file:
+    name: logs/application.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  server:
+    port: 9091
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: false
+    rabbit:
+      enabled: true
