@@ -11,6 +11,8 @@ import com.vonage.bot_api.common.QueueNames;
 import com.vonage.bot_api.database.DatabaseRepository;
 import com.vonage.bot_api.dto.InboundEventDto;
 import com.vonage.bot_api.dto.OllamaResponseDto;
+import com.vonage.bot_api.service.other.OllamaService;
+import com.vonage.bot_api.service.other.WhatsAppService;
 import com.vonage.bot_api.service.queue.QueueEvent;
 import lombok.AllArgsConstructor;
 
@@ -19,6 +21,7 @@ import lombok.AllArgsConstructor;
 public class InboundEventWorker extends WorkerBase {
   private final OllamaService ollamaService;
   private final DatabaseRepository databaseRepository;
+  private final WhatsAppService whatsAppService;
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -42,11 +45,10 @@ public class InboundEventWorker extends WorkerBase {
 
     OllamaResponseDto ollamaResponseDto = ollamaService.ask(inboundEventDto.getText());
     String queryResponse = databaseRepository.executeRawSelect(ollamaResponseDto.getSqlQuery());
+    System.out.println(inboundEventDto.getText());
+    System.out.println(ollamaResponseDto.getSqlQuery());
     System.out.println(queryResponse);
-
-    // Execute query on PostGres
-    // Send Response to WhatsApp
-
-    // TODO: Load schema from SQL File.
+    System.out.println("");
+    // whatsAppService.send(queryResponse);
   }
 }

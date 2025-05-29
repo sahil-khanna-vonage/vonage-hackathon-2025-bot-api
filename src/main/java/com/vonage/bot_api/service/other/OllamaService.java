@@ -1,4 +1,4 @@
-package com.vonage.bot_api.service.worker;
+package com.vonage.bot_api.service.other;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,10 @@ import com.vonage.bot_api.utils.FileCache;
 import lombok.RequiredArgsConstructor;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +41,7 @@ public class OllamaService {
     RestApiPayload apiPayload = new RestApiPayload();
     apiPayload.setUrl(serverUrl);
     apiPayload.setMethod(HttpMethod.POST);
-    apiPayload.setDefaultHeaders();
+    apiPayload.addDefaultHeaders();
     apiPayload.setResponseType(Map.class);
 
     Map<String, Object> requestBody = new HashMap<>();
