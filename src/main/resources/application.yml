@@ -9,12 +9,17 @@ spring:
     port: 5672
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
+  datasource:
+    url: ${POSTGRES_DB_URL:jdbc:postgresql://localhost:5432/interactions}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
 server:
   port: 9090
 
-sqlcoder:
-    url: ${SQLCODER_URL:http://localhost:1235}
+ollama:
+    url: ${OLLAMA_API_URL:http://localhost:11434/api/chat}
 
 logging:
   file:
@@ -36,4 +41,6 @@ management:
     defaults:
       enabled: false
     rabbit:
+      enabled: true
+    db:
       enabled: true

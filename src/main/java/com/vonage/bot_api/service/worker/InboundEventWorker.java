@@ -4,24 +4,23 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vonage.bot_api.common.QueueActions;
 import com.vonage.bot_api.common.QueueNames;
+import com.vonage.bot_api.database.DatabaseRepository;
 import com.vonage.bot_api.dto.InboundEventDto;
-import com.vonage.bot_api.restapi.RestApiPayload;
-import com.vonage.bot_api.restapi.SqlCoderRestApiClient;
+import com.vonage.bot_api.dto.OllamaResponseDto;
 import com.vonage.bot_api.service.queue.QueueEvent;
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
 public class InboundEventWorker extends WorkerBase {
-  private final RestTemplate restTemplate;
-  private static final Logger logger = LoggerFactory.getLogger(InboundEventWorker.class);
+  private final OllamaService ollamaService;
+  private final DatabaseRepository databaseRepository;
+
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Override
   @RabbitListener(queues = QueueNames.INBOUND_EVENT_QUEUE, concurrency = "5-10")
@@ -40,17 +39,14 @@ public class InboundEventWorker extends WorkerBase {
 
   private void inboundEvent(Map<String, Object> data) {
     InboundEventDto inboundEventDto = new InboundEventDto(data);
-    SqlCoderRestApiClient sqlCoderRestApiClient = new SqlCoderRestApiClient(restTemplate);
-    RestApiPayload apiPayload = new RestApiPayload();
-    apiPayload.setUrl(sqlCoderRestApiClient.buildUrl("query"));
-    apiPayload.setMethod(HttpMethod.POST);
-    apiPayload.setBody(sqlCoderRestApiClient.setQuestion(inboundEventDto.getText()));
 
-    try {
-      ResponseEntity<String> response = sqlCoderRestApiClient.execute(apiPayload);
-      System.out.println(response.getBody());
-    } catch (Exception e) {
-      logger.error(e.getMessage());
-    }
+    OllamaResponseDto ollamaResponseDto = ollamaService.ask(inboundEventDto.getText());
+    String queryResponse = databaseRepository.executeRawSelect(ollamaResponseDto.getSqlQuery());
+    System.out.println(queryResponse);
+
+    // Execute query on PostGres
+    // Send Response to WhatsApp
+
+    // TODO: Load schema from SQL File.
   }
 }
