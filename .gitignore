@@ -36,3 +36,5 @@ logs/*
 
 *.env
 !example.env
+
+.cache
