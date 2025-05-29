@@ -4,15 +4,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class RestApiClient {
 
   private final RestTemplate restTemplate;
-
-  public RestApiClient(RestTemplate restTemplate) {
-    this.restTemplate = restTemplate;
-  }
 
   public <T> ResponseEntity<T> execute(RestApiPayload payload) {
     try {
