@@ -47,16 +47,16 @@ public class InboundEventWorker extends WorkerBase {
 
     OllamaResponseDto ollamaResponseDto = ollamaService.ask(inboundEventDto.getText());
     List<Map<String, Object>> result = databaseRepository.executeRawSelect(ollamaResponseDto.getSqlQuery());
-    List<String> output = formatDatabaseResult(result);
+    List<String> output = formatDatabaseResult(result, ollamaResponseDto.getNlResponseTemplate());
 
     System.out.println("\n\nQuestion: " + inboundEventDto.getText());
 
     System.out.println("Response: \n" + String.join("", output));
 
-    // whatsAppService.send(String.join("", output));
+    whatsAppService.send(String.join("", output));
   }
 
-  public List<String> formatDatabaseResult(List<Map<String, Object>> result) {
+  public List<String> formatDatabaseResult(List<Map<String, Object>> result, String nlResponseTemplate) {
     List<String> formatted = new ArrayList<>();
 
     if (result == null || result.isEmpty()) {
@@ -69,10 +69,11 @@ public class InboundEventWorker extends WorkerBase {
 
     // 1 Row, 1 Column
     if (rowCount == 1 && colCount == 1) {
-      formatted.add(String.valueOf(result.get(0).values().iterator().next()));
+      formatted.add(nlResponseTemplate.replace("%s", String.valueOf(result.get(0).values().iterator().next())));
     }
     // 1 Row, >1 Columns
     else if (rowCount == 1) {
+      formatted.add(nlResponseTemplate.replaceAll("%s", "").replace(" .", ""));
       Map<String, Object> row = result.get(0);
       for (Map.Entry<String, Object> entry : row.entrySet()) {
         formatted.add("\n- *" + entry.getKey() + "*: " + entry.getValue());
@@ -80,12 +81,14 @@ public class InboundEventWorker extends WorkerBase {
     }
     // >1 Rows, 1 Column
     else if (colCount == 1) {
+      formatted.add(nlResponseTemplate.replaceAll("%s", "").replace(" .", ""));
       for (Map<String, Object> row : result) {
         formatted.add("\n- " + String.valueOf(row.values().iterator().next()));
       }
     }
     // >1 Rows, >1 Columns
     else {
+      formatted.add(nlResponseTemplate.replaceAll("%s", "").replace(" .", ""));
       for (Map<String, Object> row : result) {
         for (Map.Entry<String, Object> entry : row.entrySet()) {
           formatted.add("\n- *" + entry.getKey() + "*: " + entry.getValue());

@@ -1,0 +1,23 @@
+Examples:
+Incorrect: SELECT COUNT(*) FROM call_logs WHERE type = 'inbound' AND DATE(start_time) = DATE CURRENT_DATE - INTERVAL '1 day';
+Correct: SELECT COUNT(*) FROM call_logs WHERE type = 'inbound' AND DATE(start_time) = CURRENT_DATE - INTERVAL '1 day';
+
+Incorrect: SELECT agent_name FROM agent_status WHERE status = 'Break';
+Correct: SELECT a.agent_id, a.agent_name, s.on_break_since FROM agents a JOIN agent_status s ON a.agent_id = s.agent_id WHERE s.status = 'Break';
+
+Incorrect: SELECT a.agent_name, MAX(aht) FROM agent_performance a GROUP BY a.agent_id ORDER BY aht DESC LIMIT 1;
+Correct: SELECT a.agent_name, MAX(ap.aht) FROM agent_performance ap JOIN agents a ON a.agent_id = ap.agent_id GROUP BY a.agent_id, ap.aht ORDER BY ap.aht DESC LIMIT 1;
+
+Incorrect: SELECT ap.agent_name, ap.csat
+Correct: SELECT a.agent_name, ap.csat FROM agent_performance ap JOIN agents a ON a.agent_id = ap.agent_id WHERE a.agent_name like '%Anna%'
+
+Incorrect: SELECT agent_id FROM agents WHERE agent_name = 'Anna'
+Correct: SELECT agent_id FROM agents WHERE agent_name like '%Anna%'
+
+Incorrect: SELECT COUNT(*) FROM call_logs WHERE type = 'support' AND queue = 'product_support';
+Correct: SELECT COUNT(*) FROM call_logs WHERE queue = 'Product Support';
+
+Incorrect: SELECT a.agent_name, s.logged_in_at FROM agents a JOIN agent_status s ON a.agent_id = s.agent_id GROUP BY s.logged_in_at ORDER BY COUNT(s.logged_in_at) DESC LIMIT 1;
+Correct: SELECT a.agent_name, s.logged_in_at FROM agents a JOIN agent_status s ON a.agent_id = s.agent_id GROUP BY a.agent_name, s.logged_in_at ORDER BY COUNT(s.logged_in_at) DESC LIMIT 1;
+
+Below is the PostGre DB schema for your reference

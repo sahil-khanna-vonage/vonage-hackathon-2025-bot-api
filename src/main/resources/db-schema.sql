@@ -44,4 +44,4 @@ CREATE TABLE call_logs (
 );
 
 COMMENT ON COLUMN call_logs.type IS 'Allowed values are "inbound" and "outbound"';
-COMMENT ON COLUMN call_logs.status IS 'Allowed values are "completed", "dropped", "queued" and "on going")';
+COMMENT ON COLUMN call_logs.status IS 'Allowed values are "completed", "dropped", "queued" and "on going"';
