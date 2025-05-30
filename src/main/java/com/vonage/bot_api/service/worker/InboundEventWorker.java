@@ -13,6 +13,8 @@ import com.vonage.bot_api.common.QueueNames;
 import com.vonage.bot_api.database.DatabaseRepository;
 import com.vonage.bot_api.dto.InboundEventDto;
 import com.vonage.bot_api.dto.OllamaResponseDto;
+import com.vonage.bot_api.service.other.OllamaService;
+import com.vonage.bot_api.service.other.WhatsAppService;
 import com.vonage.bot_api.service.queue.QueueEvent;
 import lombok.AllArgsConstructor;
 
@@ -21,6 +23,7 @@ import lombok.AllArgsConstructor;
 public class InboundEventWorker extends WorkerBase {
   private final OllamaService ollamaService;
   private final DatabaseRepository databaseRepository;
+  private final WhatsAppService whatsAppService;
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -49,6 +52,8 @@ public class InboundEventWorker extends WorkerBase {
     System.out.println("\n\nQuestion: " + inboundEventDto.getText());
 
     System.out.println("Response: \n" + String.join("", output));
+
+    // whatsAppService.send(String.join("", output));
   }
 
   public List<String> formatDatabaseResult(List<Map<String, Object>> result) {

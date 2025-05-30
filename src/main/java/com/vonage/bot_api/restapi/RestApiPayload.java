@@ -1,5 +1,6 @@
 package com.vonage.bot_api.restapi;
 
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -25,10 +26,11 @@ public class RestApiPayload {
     }
   }
 
-  public void setDefaultHeaders() {
+  public void addDefaultHeaders() {
     if (headers == null) {
       headers = new HttpHeaders();
     }
     headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
   }
 }
