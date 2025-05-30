@@ -20,6 +20,8 @@ server:
 
 ollama:
     url: ${OLLAMA_API_URL:http://localhost:11434/api/chat}
+    # model: llama3.2
+    model: rodolfo/novaai
 
 logging:
   file:

@@ -25,6 +25,9 @@ public class OllamaService {
   @Value("${ollama.url}")
   private String serverUrl;
 
+  @Value("${ollama.model}")
+  private String ollamaModel;
+
   private final RestApiClient restApiClient;
   private String chatHistoryFileName = "chat-history.json";
 
@@ -42,7 +45,7 @@ public class OllamaService {
     apiPayload.setResponseType(Map.class);
 
     Map<String, Object> requestBody = new HashMap<>();
-    requestBody.put("model", "llama3.2");
+    requestBody.put("model", ollamaModel);
     requestBody.put("stream", false);
     requestBody.put("messages", history);
 
@@ -50,7 +53,7 @@ public class OllamaService {
 
     ResponseEntity<Map<String, Object>> response = restApiClient.execute(apiPayload);
     if (response.getStatusCode().isError()) {
-      // TODO: Could not understand. Please try again later
+      return new OllamaResponseDto("{query: \"\", nl: \"\"}");
     }
 
     Map<String, Object> responseBody = response.getBody();
