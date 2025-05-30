@@ -91,7 +91,8 @@ public class OllamaService {
           });
 
       ChatMessageDto seedChatMessage = chatHistory.get(0);
-      seedChatMessage.appendContent(readDbSchema());
+      seedChatMessage.appendContent("\n\n" + readQueryImprovements());
+      seedChatMessage.appendContent("\n\n" + readDbSchema());
       chatHistory.remove(0);
       chatHistory.add(seedChatMessage);
 
@@ -101,6 +102,15 @@ public class OllamaService {
     }
 
     return chatHistory;
+  }
+
+  private String readQueryImprovements() {
+    try {
+      InputStream seedPromptStream = getClass().getClassLoader().getResourceAsStream("query-improvements.txt");
+      return new String(seedPromptStream.readAllBytes(), StandardCharsets.UTF_8);
+    } catch (Exception e) {
+      return "";
+    }
   }
 
   private String readDbSchema() {
