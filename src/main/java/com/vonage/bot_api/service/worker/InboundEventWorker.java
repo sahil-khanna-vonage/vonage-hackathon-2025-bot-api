@@ -1,5 +1,7 @@
 package com.vonage.bot_api.service.worker;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +46,58 @@ public class InboundEventWorker extends WorkerBase {
     InboundEventDto inboundEventDto = new InboundEventDto(data);
 
     OllamaResponseDto ollamaResponseDto = ollamaService.ask(inboundEventDto.getText());
-    String queryResponse = databaseRepository.executeRawSelect(ollamaResponseDto.getSqlQuery());
-    System.out.println(inboundEventDto.getText());
-    System.out.println(ollamaResponseDto.getSqlQuery());
-    System.out.println(queryResponse);
-    System.out.println("");
-    // whatsAppService.send(queryResponse);
+    List<Map<String, Object>> result = databaseRepository.executeRawSelect(ollamaResponseDto.getSqlQuery());
+    List<String> output = formatDatabaseResult(result);
+
+    System.out.println("\n\nQuestion: " + inboundEventDto.getText());
+
+    System.out.println("Response: \n" + String.join("", output));
+
+    // whatsAppService.send(String.join("", output));
+  }
+
+  public List<String> formatDatabaseResult(List<Map<String, Object>> result) {
+    List<String> formatted = new ArrayList<>();
+
+    if (result == null || result.isEmpty()) {
+      formatted.add("Could not find data. Please rephrase your question.");
+      return formatted;
+    }
+
+    int rowCount = result.size();
+    int colCount = result.get(0).size();
+
+    // 1 Row, 1 Column
+    if (rowCount == 1 && colCount == 1) {
+      formatted.add(String.valueOf(result.get(0).values().iterator().next()));
+    }
+    // 1 Row, >1 Columns
+    else if (rowCount == 1) {
+      Map<String, Object> row = result.get(0);
+      for (Map.Entry<String, Object> entry : row.entrySet()) {
+        formatted.add("\n- *" + entry.getKey() + "*: " + entry.getValue());
+      }
+    }
+    // >1 Rows, 1 Column
+    else if (colCount == 1) {
+      for (Map<String, Object> row : result) {
+        formatted.add("\n- " + String.valueOf(row.values().iterator().next()));
+      }
+    }
+    // >1 Rows, >1 Columns
+    else {
+      for (Map<String, Object> row : result) {
+        for (Map.Entry<String, Object> entry : row.entrySet()) {
+          formatted.add("\n- *" + entry.getKey() + "*: " + entry.getValue());
+        }
+        formatted.add("\n"); // delimiter between rows
+      }
+      // Remove last delimiter
+      if (!formatted.isEmpty()) {
+        formatted.remove(formatted.size() - 1);
+      }
+    }
+
+    return formatted;
   }
 }
