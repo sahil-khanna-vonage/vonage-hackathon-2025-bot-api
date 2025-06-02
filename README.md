@@ -64,7 +64,7 @@ docker-compose up -d
 To configure the application, copy the example file and fill in the correct values:
 
 ```bash
-cp env.example .prod.env
+cp example.env .prod.env
 ```
 Then edit .prod.env with your environment-specific settings.
 
