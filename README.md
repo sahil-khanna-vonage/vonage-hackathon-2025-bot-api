@@ -1,78 +1,102 @@
 # 📊 CXO Insights API – WhatsApp Query Assistant
 
-An intelligent API service enabling CXOs and managers to text natural language questions over **WhatsApp** and receive instant business insights powered by **LLaMA 3**, **PostgreSQL**, and the **Vonage Communication API**.
+An intelligent API service that enables CXOs and managers to ask natural language questions via **WhatsApp** and receive real-time business insights — powered by **[novaai](https://ollama.com/rodolfo/novaai)**, **PostgreSQL**, and the **[Vonage Communication API](https://www.vonage.com/communications-apis/messages/features/whatsapp/)**.
 
 ---
 
 ## 🚀 Overview
 
-This project allows CXOs to ask questions like:
+This system allows CXOs to send questions like:
 
 > _"How many calls were answered today?"_
 
-The system replies with:
+And instantly receive insights like:
 
 > _"A total of 22 inbound calls were answered today."_
 
 ### 🔁 End-to-End Flow
 
-1. ✅ CXO sends a WhatsApp message.
-2. ✅ API receives the message.
-3. 🤖 API forwards it to **LLaMA 3** (running locally via **Ollama**) for SQL generation.
-4. 🧠 API executes the generated SQL query against **PostgreSQL**.
-5. 📲 API replies via **Vonage WhatsApp API** with the result.
+1. ✅ CXO sends a WhatsApp message.  
+2. ✅ API receives the message via Vonage.  
+3. 🤖 Message is forwarded to **novaai** (running locally via **Ollama**) for SQL generation.  
+4. 🧠 Generated SQL is executed against **PostgreSQL**.  
+5. 📲 The response is sent back to the CXO via WhatsApp.
 
 ---
 
 ## 🧰 Tech Stack
 
-- **Spring Boot** – RESTful API Backend  
-- **Ollama + LLaMA 3** – Local LLM for SQL generation  
-- **PostgreSQL** – Metrics database  
-- **Vonage Communication API** – WhatsApp messaging  
-- **Docker Compose** – Containerized deployment
+- **Spring Boot** – RESTful API backend  
+- **Ollama + novaai** – Local LLM for SQL generation  
+- **PostgreSQL** – Business metrics database  
+- **Vonage Communication API** – WhatsApp messaging interface  
+- **Docker Compose** – Container orchestration
 
 ---
 
-## 🐳 Docker Setup
+## ⚙️ Setup Instructions
 
-### 🔧 Start the Service
+### 📁 Environment Configuration
 
-```bash
-# Load environment variables
-export $(cat .local.env | xargs)  # For local development
-# OR
-export $(cat .prod.env | xargs)   # For production
+1. Copy the environment file template:
 
-# Build and run containers
-docker-compose build
-docker-compose up -d
-
-
-## 🔍 API Documentation
-
-- **Swagger UI:**  
-  [http://localhost:9090/api/swagger-ui/index.html](http://localhost:9090/api/swagger-ui/index.html)
-
-- **Health Check:**  
-  [http://localhost:9091/actuator/health](http://localhost:9091/actuator/health)
+   ```bash
+   cp example.env .prod.env
+   ```
+Edit .prod.env with your environment-specific credentials and keys.
 
 ---
 
-## 📦 Environment Variables
+### 🧠 ML Model: novaai via Ollama
+1. Install Ollama on your local machine.
+2. Pull the fine-tuned novaai model:
 
-To configure the application, copy the example file and fill in the correct values:
+   ```bash
+   ollama pull rodolfo/novaai
+   ```
 
-```bash
-cp example.env .prod.env
-```
-Then edit .prod.env with your environment-specific settings.
+3. Run the model:
+
+   ```bash
+   ollama run rodolfo/novaai
+   ```
+
+---
+
+### 🐳 Docker Setup
+
+#### 🔧 Start the Service
+
+   ```bash
+   # Load environment variables
+   export $(cat .local.env | xargs)  # For local development
+   # OR
+   export $(cat .prod.env | xargs)   # For production
+   ```
+
+---
+
+#### Build and start the containers
+   ```bash
+   docker-compose up -d
+   ```
+---
+
+## 📚 API Documentation
+Swagger UI:
+http://localhost:9090/api/swagger-ui/index.html
+
+Health Check:
+http://localhost:9091/actuator/health
+
+---
 
 ## 🧪 Sample Data Generation
+To generate and populate sample data for testing:
 
-To populate the database with realistic test data:
+Clone the data generation script repository:
+🔗 [GitHub – Data Generation Script](https://github.com/sahil-khanna-vonage/vonage-hackathon-2025-data-generation-script)
 
-➡️ Follow the instructions in the GitHub repository:  
-[https://github.com/sahil-khanna-vonage/vonage-hackathon-2025-data-generation-script](https://github.com/sahil-khanna-vonage/vonage-hackathon-2025-data-generation-script)
+Follow the instructions in the README to insert realistic call metrics into your PostgreSQL database.
 
-➡️ After cloning the repo, run the provided script to insert sample records into your PostgreSQL database.
+---

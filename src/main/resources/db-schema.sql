@@ -1,3 +1,7 @@
+CREATE TYPE queue_enum AS ENUM ('Product Support', 'Billing Support', 'Technical Support');
+CREATE TYPE status_enum AS ENUM ('completed', 'dropped', 'queued', 'on going', 'missed');
+CREATE TYPE call_type_enum AS ENUM ('inbound', 'outbound');
+
 CREATE TABLE agents (
 	agent_id INT PRIMARY KEY,
 	agent_name VARCHAR(100)
@@ -11,8 +15,6 @@ CREATE TABLE agent_status (
 	FOREIGN KEY (agent_id) REFERENCES agents(agent_id)
 );
 
-COMMENT ON COLUMN agent_status.status IS 'Allowed values are "On Call", "Available" and "Break"';
-
 CREATE TABLE agent_performance (
 	agent_id INT PRIMARY KEY,
 	calls_handled INT,
@@ -24,7 +26,7 @@ CREATE TABLE agent_performance (
 );
 
 CREATE TABLE queue_status (
-	queue_name VARCHAR(50) PRIMARY KEY,
+	queue_name queue_enum PRIMARY KEY,
 	waiting_calls INT,
 	average_wait INT,
 	longest_wait INT,
@@ -34,14 +36,11 @@ CREATE TABLE queue_status (
 CREATE TABLE call_logs (
 	call_id UUID PRIMARY KEY,
 	agent_id INT,
-	queue VARCHAR(50),
+	queue queue_enum,
 	start_time TIMESTAMP,
 	end_time TIMESTAMP,
 	duration INT,
-	type VARCHAR(20),
-	status VARCHAR(20),
+	type call_type_enum,
+	status status_enum,
 	FOREIGN KEY (agent_id) REFERENCES agents(agent_id)
 );
-
-COMMENT ON COLUMN call_logs.type IS 'Allowed values are "inbound" and "outbound"';
-COMMENT ON COLUMN call_logs.status IS 'Allowed values are "completed", "dropped", "queued" and "on going"';
