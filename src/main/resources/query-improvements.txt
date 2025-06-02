@@ -20,4 +20,12 @@ Correct: SELECT COUNT(*) FROM call_logs WHERE queue = 'Product Support';
 Incorrect: SELECT a.agent_name, s.logged_in_at FROM agents a JOIN agent_status s ON a.agent_id = s.agent_id GROUP BY s.logged_in_at ORDER BY COUNT(s.logged_in_at) DESC LIMIT 1;
 Correct: SELECT a.agent_name, s.logged_in_at FROM agents a JOIN agent_status s ON a.agent_id = s.agent_id GROUP BY a.agent_name, s.logged_in_at ORDER BY COUNT(s.logged_in_at) DESC LIMIT 1;
 
+Incorrect: SELECT COUNT(*) FROM call_logs cl JOIN queue_status qs ON cl.queue = qs.queue_name WHERE qs.queue_name = 'Call Centre' AND DATE(cl.start_time) = CURRENT_DATE - INTERVAL '6 day';
+Correct: SELECT COUNT(*) FROM call_logs cl JOIN queue_status qs ON cl.queue = qs.queue_name WHERE DATE(cl.start_time) = CURRENT_DATE - INTERVAL '6 day';
+
+
+Note
+- There is no queue named "Call Centre".
+- The values within the column names are case-sensitive. Refer to the Comment in teh column for the allowed values.
+
 Below is the PostGre DB schema for your reference
